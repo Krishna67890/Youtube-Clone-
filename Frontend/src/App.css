@@ -184,6 +184,145 @@ body {
   position: relative;
 }
 
+/* Responsive Header Styles */
+@media (max-width: 768px) {
+  .header-center {
+    margin: 0 10px;
+  }
+  
+  .search-bar {
+    max-width: 300px;
+  }
+  
+  .logo {
+    font-size: 18px;
+  }
+  
+  .menu-icon {
+    margin-right: 16px;
+  }
+  
+  .icon-button {
+    margin-left: 16px;
+  }
+  
+  .user-avatar {
+    margin-left: 16px;
+  }
+  
+  /* Hide search bar on smaller screens */
+  @media (max-width: 576px) {
+    .search-bar {
+      max-width: 200px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .search-bar {
+      max-width: 150px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .App-header {
+    padding: 0 12px;
+  }
+  
+  .header-center {
+    margin: 0 5px;
+  }
+  
+  .search-bar {
+    max-width: 200px;
+  }
+  
+  .logo {
+    font-size: 16px;
+  }
+  
+  .search-input {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .search-button {
+    padding: 0 12px;
+  }
+  
+  .voice-search {
+    width: 36px;
+    height: 36px;
+    margin-left: 8px;
+  }
+  
+  .icon-button {
+    margin-left: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    margin-left: 12px;
+    font-size: 12px;
+  }
+  
+  .menu-icon {
+    margin-right: 12px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar {
+    max-width: 150px;
+  }
+  
+  .voice-search {
+    display: none;
+  }
+  
+  .icon-button:not(:last-child) {
+    display: none;
+  }
+  
+  /* Video player adjustments for small screens */
+  .video-player-container {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .video-player-content {
+    flex-direction: column;
+  }
+  
+  .recommendations-sidebar {
+    width: 100%;
+    max-height: 150px;
+  }
+  
+  .recommendations-list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  
+  .recommendation-item {
+    min-width: 160px;
+  }
+  
+  .minimized-player {
+    width: 250px;
+    height: 140px;
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
 .icon-button {
   background: none;
   border: none;
@@ -328,6 +467,91 @@ body {
   background: rgba(255, 0, 0, 0.8);
   color: white;
   transform: rotate(90deg);
+}
+
+/* Responsive Modal Styles */
+@media (max-width: 576px) {
+  .modal-content {
+    width: 90vw;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  .modal-header h2 {
+    font-size: 20px;
+  }
+  
+  .close-button {
+    width: 36px;
+    height: 36px;
+    top: 12px;
+    right: 12px;
+  }
+  
+  /* Adjust auth modal for small screens */
+  .auth-modal {
+    width: 95vw;
+    max-width: 95vw;
+  }
+  
+  .demo-users-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .demo-user-card {
+    padding: 10px;
+  }
+  
+  .demo-user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 95vw;
+    padding: 16px;
+    border-radius: 10px;
+  }
+  
+  .modal-header h2 {
+    font-size: 18px;
+  }
+  
+  .form-group input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  /* Chat interface adjustments for small screens */
+  .messages-container {
+    width: 280px;
+    height: 300px;
+    bottom: 10px;
+    right: 70px;
+  }
+  
+  .chat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .unread-indicator {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
 }
 
 @keyframes fadeIn {
@@ -524,6 +748,75 @@ body {
   text-transform: uppercase;
 }
 
+/* Responsive Sidebar Styles */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 72px;
+  }
+  
+  .sidebar-text {
+    display: none;
+  }
+  
+  .sidebar-icon {
+    margin-right: 0;
+    margin: 0 auto;
+  }
+  
+  .sidebar-item {
+    justify-content: center;
+    padding: 0;
+  }
+  
+  .sidebar-section-title {
+    display: none;
+  }
+  
+  .sidebar-divider {
+    margin: 8px 0;
+  }
+  
+  /* Further adjustments for smaller tablets */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 60px;
+    }
+    
+    .sidebar-item {
+      height: 36px;
+    }
+    
+    .sidebar-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 576px) {
+  .sidebar {
+    width: 60px;
+    top: 56px;
+  }
+  
+  .sidebar-item {
+    height: 36px;
+  }
+  
+  .sidebar-icon {
+    font-size: 16px;
+  }
+}
+
 /* Content Area */
 .content {
   flex: 1;
@@ -554,21 +847,128 @@ body {
   padding: 0 12px;
 }
 
-@media (min-width: 768px) {
+/* Mobile First Approach */
+.video-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 0 12px;
+}
+
+/* Extra Small Devices (Portrait Phones) */
+@media (max-width: 320px) {
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 8px;
+  }
+  
+  .content {
+    padding: 12px 8px 0;
+  }
+  
+  .thumbnail {
+    border-radius: 6px;
+  }
+  
+  .channel-avatar {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+  }
+  
+  .video-title {
+    font-size: 13px;
+  }
+  
+  .channel-name,
+  .video-meta {
+    font-size: 11px;
+  }
+  
+  .duration {
+    font-size: 9px;
+    padding: 1px 2px;
+  }
+}
+
+/* Extra Small Devices (Phones) */
+@media (min-width: 480px) {
   .video-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
-@media (min-width: 1024px) {
+/* Small Devices (Large Phones) */
+@media (min-width: 576px) {
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+}
+
+/* Medium Devices (Tablets) */
+@media (min-width: 768px) {
   .video-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  
+  .content {
+    padding: 20px;
   }
 }
 
-@media (min-width: 1280px) {
+/* Large Devices (Small Desktops) */
+@media (min-width: 992px) {
+  .video-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .content {
+    padding: 24px;
+  }
+}
+
+/* Extra Large Devices (Desktops) */
+@media (min-width: 1200px) {
   .video-grid {
     grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  
+  .content {
+    padding: 24px 40px;
+  }
+}
+
+/* XXL Devices (Large Desktops) */
+@media (min-width: 1400px) {
+  .video-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  
+  .content {
+    padding: 24px 60px;
+  }
+}
+
+/* XXXL Devices (Ultra Wide) */
+@media (min-width: 1800px) {
+  .video-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+  }
+  
+  .content {
+    padding: 24px 80px;
   }
 }
 
@@ -729,6 +1129,105 @@ body {
 .video-meta {
   font-size: 14px;
   color: var(--text-secondary);
+}
+
+/* Responsive Video Card Styles */
+@media (max-width: 576px) {
+  .video-title {
+    font-size: 14px;
+  }
+  
+  .channel-name,
+  .video-meta {
+    font-size: 12px;
+  }
+  
+  .channel-avatar {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+  }
+  
+  .duration {
+    font-size: 10px;
+    padding: 1px 3px;
+  }
+  
+  .thumbnail {
+    border-radius: 8px;
+  }
+  
+  /* Adjust video player for mobile */
+  .video-player-container {
+    width: 95%;
+    max-width: 95vw;
+  }
+  
+  .recommendations-sidebar {
+    width: 100%;
+    max-height: 200px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .recommendations-list {
+    flex-direction: row;
+  }
+  
+  .recommendation-item {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-title {
+    font-size: 13px;
+  }
+  
+  .channel-name,
+  .video-meta {
+    font-size: 11px;
+  }
+  
+  .channel-avatar {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+  }
+  
+  .duration {
+    font-size: 9px;
+    padding: 1px 2px;
+  }
+  
+  /* Team member adjustments for small screens */
+  .team-members {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .team-member {
+    padding: 12px;
+  }
+  
+  .member-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+  }
+  
+  .member-name {
+    font-size: 14px;
+  }
+  
+  .member-role {
+    font-size: 12px;
+  }
+  
+  .member-description {
+    font-size: 11px;
+  }
 }
 
 /* Landing Page */

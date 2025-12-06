@@ -43,6 +43,16 @@
   .header-center {
     margin: 0 30px;
   }
+  
+  /* Small desktop/tablet landscape specific adjustments */
+  .team-members {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+  
+  .video-player-container {
+    max-width: 1000px;
+  }
 }
 
 /* Tablet */
@@ -74,6 +84,25 @@
   
   .header-center {
     margin: 0 20px;
+  }
+  
+  /* Tablet specific adjustments */
+  .App-header {
+    height: 55px;
+  }
+  
+  .sidebar {
+    top: 55px;
+  }
+  
+  .content {
+    margin-top: 55px;
+    min-height: calc(100vh - 55px);
+  }
+  
+  .team-members {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
   }
 }
 
@@ -108,6 +137,25 @@
   .page-title {
     font-size: 18px;
     margin-bottom: 20px;
+  }
+  
+  /* Large mobile specific adjustments */
+  .App-header {
+    height: 54px;
+  }
+  
+  .sidebar {
+    top: 54px;
+  }
+  
+  .content {
+    margin-top: 54px;
+    min-height: calc(100vh - 54px);
+  }
+  
+  .team-members {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
@@ -158,6 +206,25 @@
   .channel-name,
   .video-meta {
     font-size: 13px;
+  }
+  
+  /* Medium mobile specific adjustments */
+  .App-header {
+    height: 52px;
+  }
+  
+  .sidebar {
+    top: 52px;
+  }
+  
+  .content {
+    margin-top: 52px;
+    min-height: calc(100vh - 52px);
+  }
+  
+  .team-members {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 }
 
@@ -234,6 +301,29 @@
   .duration {
     font-size: 10px;
     padding: 1px 3px;
+  }
+  
+  /* Additional small screen optimizations */
+  .App-header {
+    height: 50px;
+    padding: 0 12px;
+  }
+  
+  .sidebar {
+    top: 50px;
+  }
+  
+  .content {
+    margin-top: 50px;
+    min-height: calc(100vh - 50px);
+  }
+  
+  .video-card {
+    border-radius: 8px;
+  }
+  
+  .thumbnail-container {
+    border-radius: 8px;
   }
 }
 
