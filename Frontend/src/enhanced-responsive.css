@@ -139,7 +139,11 @@
   }
   
   .sidebar {
-    display: none;
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
   }
   
   .content-expanded {

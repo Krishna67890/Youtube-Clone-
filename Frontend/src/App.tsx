@@ -876,7 +876,7 @@ function App() {
       {isAuthenticated ? (
         <>
           {/* Sidebar */}
-          <div className={`sidebar ${isSidebarOpen ? '' : 'sidebar-collapsed'}`}>
+          <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
             <div 
               className={`sidebar-item ${currentView === 'home' ? 'active' : ''}`}
               onClick={goToHome}
