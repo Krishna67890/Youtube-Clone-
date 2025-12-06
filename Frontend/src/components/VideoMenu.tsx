@@ -70,7 +70,13 @@ const VideoMenu: React.FC<VideoMenuProps> = ({
 
   return (
     <div className="video-menu" ref={menuRef}>
-      <button className="menu-button" onClick={toggleMenu}>⋯</button>
+      <button className="menu-button" onClick={toggleMenu}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="2"/>
+          <circle cx="12" cy="5" r="2"/>
+          <circle cx="12" cy="19" r="2"/>
+        </svg>
+      </button>
       {isOpen && (
         <div className="menu-dropdown">
           {showFullMenu ? (

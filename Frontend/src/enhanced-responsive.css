@@ -3,7 +3,7 @@
 /* Large Desktop */
 @media (min-width: 1400px) {
   .video-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
   
   .content {
@@ -13,33 +13,23 @@
   .header-center {
     margin: 0 60px;
   }
-  
-  .thumbnail-name {
-    font-size: 16px;
-    padding: 8px 16px;
-  }
 }
 
 /* Desktop */
 @media (min-width: 1200px) and (max-width: 1399px) {
   .video-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
   
   .content {
     padding: 24px 32px 0;
-  }
-  
-  .thumbnail-name {
-    font-size: 15px;
-    padding: 6px 12px;
   }
 }
 
 /* Small Desktop/Tablet Landscape */
 @media (min-width: 992px) and (max-width: 1199px) {
   .video-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
   
   .sidebar {
@@ -53,27 +43,12 @@
   .header-center {
     margin: 0 30px;
   }
-  
-  /* Small desktop/tablet landscape specific adjustments */
-  .team-members {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-  
-  .video-player-container {
-    max-width: 1000px;
-  }
-  
-  .thumbnail-name {
-    font-size: 14px;
-    padding: 6px 12px;
-  }
 }
 
 /* Tablet */
 @media (min-width: 768px) and (max-width: 991px) {
   .video-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
   
   .sidebar {
@@ -100,42 +75,22 @@
   .header-center {
     margin: 0 20px;
   }
-  
-  /* Tablet specific adjustments */
-  .App-header {
-    height: 55px;
-  }
-  
-  .sidebar {
-    top: 55px;
-  }
-  
-  .content {
-    margin-top: 55px;
-    min-height: calc(100vh - 55px);
-  }
-  
-  .team-members {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-  
-  .thumbnail-name {
-    font-size: 13px;
-    padding: 5px 10px;
-  }
 }
 
 /* Large Mobile */
 @media (min-width: 576px) and (max-width: 767px) {
   .video-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
   }
   
   .content {
     margin-left: 0;
     padding: 16px 16px 0;
+  }
+  
+  .sidebar {
+    display: none;
   }
   
   .content-expanded {
@@ -154,32 +109,12 @@
     font-size: 18px;
     margin-bottom: 20px;
   }
-  
-  /* Large mobile specific adjustments */
-  .App-header {
-    height: 54px;
-  }
-  
-  .content {
-    margin-top: 54px;
-    min-height: calc(100vh - 54px);
-  }
-  
-  .team-members {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-  
-  .thumbnail-name {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
 }
 
 /* Medium Mobile */
 @media (min-width: 480px) and (max-width: 575px) {
   .video-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 12px;
   }
   
@@ -223,26 +158,6 @@
   .channel-name,
   .video-meta {
     font-size: 13px;
-  }
-  
-  /* Medium mobile specific adjustments */
-  .App-header {
-    height: 52px;
-  }
-  
-  .content {
-    margin-top: 52px;
-    min-height: calc(100vh - 52px);
-  }
-  
-  .team-members {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
-  
-  .thumbnail-name {
-    font-size: 11px;
-    padding: 3px 6px;
   }
 }
 
@@ -319,25 +234,6 @@
   .duration {
     font-size: 10px;
     padding: 1px 3px;
-  }
-  
-  /* Additional small screen optimizations */
-  .App-header {
-    height: 50px;
-    padding: 0 12px;
-  }
-  
-  .content {
-    margin-top: 50px;
-    min-height: calc(100vh - 50px);
-  }
-  
-  .video-card {
-    border-radius: 8px;
-  }
-  
-  .thumbnail-container {
-    border-radius: 8px;
   }
 }
 
@@ -557,6 +453,61 @@
 .menu-dropdown {
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .menu-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 50vh;
+    border-radius: 12px 12px 0 0;
+    animation: menuSlideUp 0.3s ease-out;
+    transform-origin: bottom center;
+    overflow-y: auto;
+  }
+  
+  @keyframes menuSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .submenu {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 50vh;
+    border-radius: 12px 12px 0 0;
+    animation: menuSlideUp 0.3s ease-out;
+    overflow-y: auto;
+  }
+  
+  .menu-button {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .menu-item {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+  
+  .submenu-item {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
 }
 
 /* Enhanced chat icon styling */
