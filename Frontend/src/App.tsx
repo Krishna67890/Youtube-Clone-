@@ -491,7 +491,7 @@ function App() {
     {
       id: '1',
       title: 'Tu Hai Kahan',
-      channel: 'Rauf & Faik',
+      channel: 'Krishna Patil Rajput',
       views: '150M',
       timestamp: '1 year ago',
       duration: '4:20',
@@ -500,7 +500,7 @@ function App() {
     {
       id: '2',
       title: 'Tu han Kahan',
-      channel: 'Rauf & Faik',
+      channel: 'Atharva Patil Rajput',
       views: '150M',
       timestamp: '1 year ago',
       duration: '4:20',
@@ -509,7 +509,7 @@ function App() {
     {
       id: '3',
       title: '12 Bande',
-      channel: 'Divine',
+      channel: 'Ankush Khakale',
       views: '85M',
       timestamp: '2 years ago',
       duration: '3:45',
@@ -518,7 +518,7 @@ function App() {
     {
       id: '4',
       title: 'Murder',
-      channel: 'Amit Trivedi',
+      channel: 'Mahesh Vispute',
       views: '200M',
       timestamp: '6 months ago',
       duration: '5:15',
@@ -527,7 +527,7 @@ function App() {
     {
       id: '5',
       title: 'Apa Fer Milaange',
-      channel: 'Nawazishein',
+      channel: 'Krishna Patil Rajput',
       views: '120M',
       timestamp: '3 months ago',
       duration: '4:10',
@@ -537,7 +537,7 @@ function App() {
     {
       id: '6',
       title: 'Minecraft Survival House Build Tutorial',
-      channel: 'GamingWithMark',
+      channel: 'Atharva Patil Rajput',
       views: '12M',
       timestamp: '2 weeks ago',
       duration: '15:32',
@@ -546,7 +546,7 @@ function App() {
     {
       id: '7',
       title: 'GTA 5 Funny Moments Compilation',
-      channel: 'GameLaughs',
+      channel: 'Ankush Khakale',
       views: '45M',
       timestamp: '1 month ago',
       duration: '22:18',
@@ -555,7 +555,7 @@ function App() {
     {
       id: '8',
       title: 'Red Dead Redemption 1 - Epic Story Finale',
-      channel: 'WesternGamer',
+      channel: 'Mahesh Vispute',
       views: '8M',
       timestamp: '3 months ago',
       duration: '18:45',
@@ -564,7 +564,7 @@ function App() {
     {
       id: '9',
       title: 'Red Dead Redemption 2 - Best Hunting Locations',
-      channel: 'WildWestAdventures',
+      channel: 'Krishna Patil Rajput',
       views: '15M',
       timestamp: '5 months ago',
       duration: '12:30',
@@ -574,7 +574,7 @@ function App() {
     {
       id: '10',
       title: 'Building a YouTube Clone with React and Node.js',
-      channel: 'Tech Tutorials',
+      channel: 'Atharva Patil Rajput',
       views: '1.2M',
       timestamp: '2 days ago',
       duration: '10:25',
@@ -582,8 +582,8 @@ function App() {
     },
     {
       id: '11',
-      title: 'Learn TypeScript in 1 Hour - Beginner\'s Tutorial',
-      channel: 'Coding Master',
+      title: 'Learn TypeScript in 1 Hour - Beginners Tutorial',
+      channel: 'Ankush Khakale',
       views: '850K',
       timestamp: '1 week ago',
       duration: '15:42',
@@ -593,7 +593,7 @@ function App() {
     {
       id: '12',
       title: 'Quick JavaScript Tip - Array Destructuring',
-      channel: 'JS Shorts',
+      channel: 'Mahesh Vispute',
       views: '2.3M',
       timestamp: '4 days ago',
       duration: '0:58',
@@ -602,7 +602,7 @@ function App() {
     {
       id: '13',
       title: 'Cooking Hack - 5 Minute Pasta',
-      channel: 'FoodieShorts',
+      channel: 'Krishna Patil Rajput',
       views: '5.7M',
       timestamp: '1 week ago',
       duration: '0:42',
@@ -611,7 +611,7 @@ function App() {
     {
       id: '14',
       title: 'Fitness Motivation in 60 Seconds',
-      channel: 'FitLife',
+      channel: 'Atharva Patil Rajput',
       views: '3.2M',
       timestamp: '3 days ago',
       duration: '1:00',
@@ -620,7 +620,7 @@ function App() {
     {
       id: '15',
       title: 'Funny Cat Compilation #42',
-      channel: 'PetLovers',
+      channel: 'Ankush Khakale',
       views: '18M',
       timestamp: '2 weeks ago',
       duration: '0:55',

@@ -103,7 +103,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         },
         {
           id: '2',
-          username: 'Coding Master',
+          username: 'Ankush Khakale',
           text: 'Thanks for the tutorial. Can you make one on advanced topics?',
           timestamp: '1 day ago',
           likes: 12
