@@ -3,7 +3,7 @@
 /* Large Desktop */
 @media (min-width: 1400px) {
   .video-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
   }
   
   .content {
@@ -13,23 +13,33 @@
   .header-center {
     margin: 0 60px;
   }
+  
+  .thumbnail-name {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
 }
 
 /* Desktop */
 @media (min-width: 1200px) and (max-width: 1399px) {
   .video-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
   }
   
   .content {
     padding: 24px 32px 0;
+  }
+  
+  .thumbnail-name {
+    font-size: 15px;
+    padding: 6px 12px;
   }
 }
 
 /* Small Desktop/Tablet Landscape */
 @media (min-width: 992px) and (max-width: 1199px) {
   .video-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
   }
   
   .sidebar {
@@ -53,12 +63,17 @@
   .video-player-container {
     max-width: 1000px;
   }
+  
+  .thumbnail-name {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
 }
 
 /* Tablet */
 @media (min-width: 768px) and (max-width: 991px) {
   .video-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
   }
   
   .sidebar {
@@ -104,12 +119,17 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 25px;
   }
+  
+  .thumbnail-name {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
 }
 
 /* Large Mobile */
 @media (min-width: 576px) and (max-width: 767px) {
   .video-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
   
@@ -157,12 +177,17 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
+  
+  .thumbnail-name {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
 
 /* Medium Mobile */
 @media (min-width: 480px) and (max-width: 575px) {
   .video-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
   
@@ -225,6 +250,11 @@
   .team-members {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
+  }
+  
+  .thumbnail-name {
+    font-size: 11px;
+    padding: 3px 6px;
   }
 }
 

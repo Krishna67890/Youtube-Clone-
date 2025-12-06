@@ -1141,6 +1141,7 @@ function App() {
                     <div className="video-card" key={video.id} onClick={() => selectVideo(video)}>
                       <div className="thumbnail-container">
                         <div className="thumbnail">
+                          <div className="thumbnail-name">{video.channel}</div>
                           <div className="duration">{video.duration}</div>
                         </div>
                         {/* Simplified 3-dot menu for video grid - only remove option */}
@@ -1177,6 +1178,7 @@ function App() {
                   <div className="video-card" key={video.id} onClick={() => selectVideo(video)}>
                     <div className="thumbnail-container">
                       <div className="thumbnail">
+                        <div className="thumbnail-name">{video.channel}</div>
                         <div className="duration">{video.duration}</div>
                       </div>
                       {/* Simplified 3-dot menu for video grid - only remove option */}
