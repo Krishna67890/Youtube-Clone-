@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { registerStart, registerSuccess, registerFailure } from '../../Store/slices/AuthSlice';
+import { registerStart, registerSuccess, registerFailure } from '../../Store/slices/authSlice';
 import { authAPI } from '../../services/api/authAPI';
 
 interface RegisterFormProps {

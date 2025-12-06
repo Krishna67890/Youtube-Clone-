@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { loginStart, loginSuccess, loginFailure } from '../../Store/slices/AuthSlice';
+import { loginStart, loginSuccess, loginFailure } from '../../Store/slices/authSlice';
 import { authAPI } from '../../services/api/authAPI';
 
 interface LoginFormProps {

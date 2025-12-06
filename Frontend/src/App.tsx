@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from './Store/hooks';
-import { logout } from './Store/slices/AuthSlice';
+import { logout } from './Store/slices/authSlice';
 import AuthModal from './components/auth/AuthModal';
 import VideoPlayer from './components/VideoPlayer';
 import VideoMenu from './components/VideoMenu';
