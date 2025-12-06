@@ -1009,7 +1009,7 @@ function App() {
           </div>
           
           {/* Content Area */}
-          <div className={`content ${!isSidebarOpen ? 'content-expanded' : ''}`}>
+          <div className={`content ${isSidebarOpen ? '' : 'content-expanded'}`}>
             <h1 className="page-title">
               {currentView === 'home' && 'Recommended'}
               {currentView === 'trending' && 'Trending'}

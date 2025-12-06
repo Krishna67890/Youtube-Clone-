@@ -858,6 +858,10 @@ body {
   .content {
     margin-left: 0;
   }
+  
+  .content.content-expanded {
+    margin-left: 0;
+  }
 }
 .page-title {
   font-size: 20px;
