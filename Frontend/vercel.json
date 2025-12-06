@@ -1,21 +1,10 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "devCommand": "npm start",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
