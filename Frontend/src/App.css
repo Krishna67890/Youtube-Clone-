@@ -89,12 +89,12 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  /* Ensure menu icon is always visible and clickable */
+  z-index: 100;
 }
-
 .menu-icon:hover {
   background-color: var(--bg-hover);
 }
-
 .logo {
   font-size: 20px;
   font-weight: bold;
@@ -683,6 +683,22 @@ body {
   scrollbar-color: var(--text-secondary) var(--bg-sidebar);
 }
 
+/* Default state - visible on desktop, hidden on mobile */
+@media (min-width: 769px) {
+  .sidebar {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -822,15 +838,27 @@ body {
   flex: 1;
   margin-left: 240px;
   padding: 24px 24px 0;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, transform 0.3s ease;
   margin-top: 56px;
   min-height: calc(100vh - 56px);
 }
 
-.content-expanded {
-  margin-left: 0;
+/* Adjust content area for different screen sizes */
+@media (min-width: 769px) {
+  .content {
+    margin-left: 240px;
+  }
+  
+  .content.content-expanded {
+    margin-left: 72px;
+  }
 }
 
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+  }
+}
 .page-title {
   font-size: 20px;
   font-weight: 400;

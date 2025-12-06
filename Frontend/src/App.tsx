@@ -39,7 +39,8 @@ interface TeamMember {
 function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // Initialize sidebar state based on screen size - collapsed on mobile by default
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
   const [currentView, setCurrentView] = useState('home'); // home, history, subscriptions, playlists, etc.
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [isPlayerMinimized, setIsPlayerMinimized] = useState(false);
@@ -169,6 +170,22 @@ function App() {
       });
     }
   }, [isAuthenticated]);
+
+  // Add resize event listener to handle sidebar state on screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      // On desktop (width > 768px), sidebar should be open by default
+      // On mobile (width <= 768px), sidebar should be closed by default
+      setIsSidebarOpen(window.innerWidth > 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+  
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const openAuthModal = () => {
     setIsAuthModalOpen(true);

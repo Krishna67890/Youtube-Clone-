@@ -138,14 +138,6 @@
     padding: 16px 16px 0;
   }
   
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  
   .content-expanded {
     margin-left: 0;
   }
@@ -166,10 +158,6 @@
   /* Large mobile specific adjustments */
   .App-header {
     height: 54px;
-  }
-  
-  .sidebar {
-    top: 54px;
   }
   
   .content {
@@ -240,10 +228,6 @@
   /* Medium mobile specific adjustments */
   .App-header {
     height: 52px;
-  }
-  
-  .sidebar {
-    top: 52px;
   }
   
   .content {
@@ -341,10 +325,6 @@
   .App-header {
     height: 50px;
     padding: 0 12px;
-  }
-  
-  .sidebar {
-    top: 50px;
   }
   
   .content {
