@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { registerStart, registerSuccess, registerFailure } from '../../Store/slices/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerStart, registerSuccess, registerFailure, clearError } from '../../Store/slices/authSlice';
 import { authAPI } from '../../services/api/authAPI';
 
 interface RegisterFormProps {
@@ -10,12 +10,19 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleForm, prefillData = {} }) => {
   const dispatch = useDispatch();
+  const { error, loading } = useSelector((state: any) => state.auth);
+  
   const [formData, setFormData] = useState({
     username: '',
     email: prefillData.email || '',
     password: '',
     confirmPassword: '',
   });
+
+  // Clear error when component mounts
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   // Update form data when prefillData changes
   useEffect(() => {
@@ -62,6 +69,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleForm, prefillData =
           onChange={onChange}
           required
         />
+        <i>👤</i>
       </div>
       <div className="form-group">
         <input
@@ -72,6 +80,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleForm, prefillData =
           onChange={onChange}
           required
         />
+        <i>📧</i>
       </div>
       <div className="form-group">
         <input
@@ -83,6 +92,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleForm, prefillData =
           minLength={6}
           required
         />
+        <i>🔒</i>
       </div>
       <div className="form-group">
         <input
@@ -94,8 +104,26 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleForm, prefillData =
           minLength={6}
           required
         />
+        <i>🔒</i>
       </div>
-      <button type="submit" className="btn btn-primary">Create account</button>
+      
+      {error && (
+        <div className="error-message">
+          <i>⚠️</i>
+          {error}
+        </div>
+      )}
+      
+      <button type="submit" className="btn btn-primary" disabled={loading}>
+        {loading ? (
+          <>
+            <span className="loading-spinner"></span>
+            Creating account...
+          </>
+        ) : (
+          "Create account"
+        )}
+      </button>
       
       <div className="auth-footer">
         <p>Already have an account? <button type="button" onClick={onToggleForm} className="link-button">Sign in</button></p>

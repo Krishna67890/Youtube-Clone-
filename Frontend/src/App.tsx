@@ -39,8 +39,8 @@ interface TeamMember {
 function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  // Initialize sidebar state based on screen size - collapsed on mobile by default
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Add this state for mobile menu
   const [currentView, setCurrentView] = useState('home'); // home, history, subscriptions, playlists, etc.
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [isPlayerMinimized, setIsPlayerMinimized] = useState(false);
@@ -171,22 +171,6 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // Add resize event listener to handle sidebar state on screen size changes
-  useEffect(() => {
-    const handleResize = () => {
-      // On desktop (width > 768px), sidebar should be open by default
-      // On mobile (width <= 768px), sidebar should be closed by default
-      setIsSidebarOpen(window.innerWidth > 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-  
-    // Cleanup event listener on component unmount
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   const openAuthModal = () => {
     setIsAuthModalOpen(true);
   };
@@ -201,6 +185,11 @@ function App() {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // Add this function for mobile menu toggle
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   // Clear search when navigating home
@@ -508,7 +497,7 @@ function App() {
     {
       id: '1',
       title: 'Tu Hai Kahan',
-      channel: 'Krishna Patil Rajput',
+      channel: 'Rauf & Faik',
       views: '150M',
       timestamp: '1 year ago',
       duration: '4:20',
@@ -517,7 +506,7 @@ function App() {
     {
       id: '2',
       title: 'Tu han Kahan',
-      channel: 'Atharva Patil Rajput',
+      channel: 'Rauf & Faik',
       views: '150M',
       timestamp: '1 year ago',
       duration: '4:20',
@@ -526,7 +515,7 @@ function App() {
     {
       id: '3',
       title: '12 Bande',
-      channel: 'Ankush Khakale',
+      channel: 'Divine',
       views: '85M',
       timestamp: '2 years ago',
       duration: '3:45',
@@ -535,7 +524,7 @@ function App() {
     {
       id: '4',
       title: 'Murder',
-      channel: 'Mahesh Vispute',
+      channel: 'Amit Trivedi',
       views: '200M',
       timestamp: '6 months ago',
       duration: '5:15',
@@ -544,7 +533,7 @@ function App() {
     {
       id: '5',
       title: 'Apa Fer Milaange',
-      channel: 'Krishna Patil Rajput',
+      channel: 'Nawazishein',
       views: '120M',
       timestamp: '3 months ago',
       duration: '4:10',
@@ -554,7 +543,7 @@ function App() {
     {
       id: '6',
       title: 'Minecraft Survival House Build Tutorial',
-      channel: 'Atharva Patil Rajput',
+      channel: 'GamingWithMark',
       views: '12M',
       timestamp: '2 weeks ago',
       duration: '15:32',
@@ -563,7 +552,7 @@ function App() {
     {
       id: '7',
       title: 'GTA 5 Funny Moments Compilation',
-      channel: 'Ankush Khakale',
+      channel: 'GameLaughs',
       views: '45M',
       timestamp: '1 month ago',
       duration: '22:18',
@@ -572,7 +561,7 @@ function App() {
     {
       id: '8',
       title: 'Red Dead Redemption 1 - Epic Story Finale',
-      channel: 'Mahesh Vispute',
+      channel: 'WesternGamer',
       views: '8M',
       timestamp: '3 months ago',
       duration: '18:45',
@@ -581,7 +570,7 @@ function App() {
     {
       id: '9',
       title: 'Red Dead Redemption 2 - Best Hunting Locations',
-      channel: 'Krishna Patil Rajput',
+      channel: 'WildWestAdventures',
       views: '15M',
       timestamp: '5 months ago',
       duration: '12:30',
@@ -591,7 +580,7 @@ function App() {
     {
       id: '10',
       title: 'Building a YouTube Clone with React and Node.js',
-      channel: 'Atharva Patil Rajput',
+      channel: 'Tech Tutorials',
       views: '1.2M',
       timestamp: '2 days ago',
       duration: '10:25',
@@ -599,8 +588,8 @@ function App() {
     },
     {
       id: '11',
-      title: 'Learn TypeScript in 1 Hour - Beginners Tutorial',
-      channel: 'Ankush Khakale',
+      title: 'Learn TypeScript in 1 Hour - Beginner\'s Tutorial',
+      channel: 'Coding Master',
       views: '850K',
       timestamp: '1 week ago',
       duration: '15:42',
@@ -610,7 +599,7 @@ function App() {
     {
       id: '12',
       title: 'Quick JavaScript Tip - Array Destructuring',
-      channel: 'Mahesh Vispute',
+      channel: 'JS Shorts',
       views: '2.3M',
       timestamp: '4 days ago',
       duration: '0:58',
@@ -619,7 +608,7 @@ function App() {
     {
       id: '13',
       title: 'Cooking Hack - 5 Minute Pasta',
-      channel: 'Krishna Patil Rajput',
+      channel: 'FoodieShorts',
       views: '5.7M',
       timestamp: '1 week ago',
       duration: '0:42',
@@ -628,7 +617,7 @@ function App() {
     {
       id: '14',
       title: 'Fitness Motivation in 60 Seconds',
-      channel: 'Atharva Patil Rajput',
+      channel: 'FitLife',
       views: '3.2M',
       timestamp: '3 days ago',
       duration: '1:00',
@@ -637,7 +626,7 @@ function App() {
     {
       id: '15',
       title: 'Funny Cat Compilation #42',
-      channel: 'Ankush Khakale',
+      channel: 'PetLovers',
       views: '18M',
       timestamp: '2 weeks ago',
       duration: '0:55',
@@ -794,8 +783,18 @@ function App() {
       {/* Header */}
       <header className="App-header">
         <div className="header-left">
-          <div className="menu-icon" onClick={toggleSidebar}>☰</div>
-          <div className="logo" onClick={goToHome}>
+          <div className="menu-icon" onClick={() => {
+                      const isLargeScreen = window.innerWidth >= 1024;
+                      if (isLargeScreen) {
+                        // On PC, keep the sidebar open and only toggle mobile menu if needed
+                        setIsSidebarOpen(true);
+                        // Close mobile menu if it's open
+                        setIsMobileMenuOpen(false);
+                      } else {
+                        // On mobile, toggle the mobile menu
+                        toggleMobileMenu();
+                      }
+                    }}>☰</div>          <div className="logo" onClick={goToHome}>
             <span>You</span><span>Tube</span>
           </div>
         </div>
@@ -887,13 +886,107 @@ function App() {
         </div>
       </header>
       
+      {/* Mobile Menu - only visible on mobile devices when open */}
+      <div className={`mobile-menu ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
+        <div className="mobile-menu-header">
+          <div className="logo" onClick={goToHome}>
+            <span>You</span><span>Tube</span>
+          </div>
+          <button className="close-button" onClick={toggleMobileMenu}>×</button>
+        </div>
+        <div className="mobile-menu-content">
+          <div className="mobile-menu-section">
+            <h3>Navigation</h3>
+            <div className="mobile-menu-item" onClick={() => { goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">🏠</div>
+              <div className="mobile-menu-text">Home</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('trending'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">🔥</div>
+              <div className="mobile-menu-text">Trending</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('shorts'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">⏱️</div>
+              <div className="mobile-menu-text">Shorts</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('subscriptions'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">📺</div>
+              <div className="mobile-menu-text">Subscriptions</div>
+            </div>
+          </div>
+          
+          <div className="mobile-menu-section">
+            <h3>Library</h3>
+            <div className="mobile-menu-item" onClick={() => { goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">📚</div>
+              <div className="mobile-menu-text">Library</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('history'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">🕒</div>
+              <div className="mobile-menu-text">History</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('liked'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">👍</div>
+              <div className="mobile-menu-text">Liked videos</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('watchlater'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">⏱️</div>
+              <div className="mobile-menu-text">Watch later</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('yourvideos'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">🎥</div>
+              <div className="mobile-menu-text">Your videos</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('downloads'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">⬇️</div>
+              <div className="mobile-menu-text">Downloads</div>
+            </div>
+          </div>
+          
+          <div className="mobile-menu-section">
+            <h3>Explore</h3>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('gaming'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">🎮</div>
+              <div className="mobile-menu-text">Gaming</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('music'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">🎵</div>
+              <div className="mobile-menu-text">Music</div>
+            </div>
+          </div>
+          
+          <div className="mobile-menu-section">
+            <h3>Settings</h3>
+            <div className="mobile-menu-item" onClick={() => { setShowAboutUs(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">ℹ️</div>
+              <div className="mobile-menu-text">About us</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setShowSettings(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">⚙️</div>
+              <div className="mobile-menu-text">Settings</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setShowHelp(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">❓</div>
+              <div className="mobile-menu-text">Help</div>
+            </div>
+            <div className="mobile-menu-item" onClick={() => { setCurrentView('feedback'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">💬</div>
+              <div className="mobile-menu-text">Send feedback</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Overlay for mobile menu */}
+      {isMobileMenuOpen && <div className="mobile-menu-overlay" onClick={toggleMobileMenu}></div>}
+      
       {/* Auth Modal */}
       <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
       
       {isAuthenticated ? (
         <>
           {/* Sidebar */}
-          <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div className={`sidebar ${isSidebarOpen ? 'sidebar-mobile-open' : ''} ${isSidebarOpen ? '' : 'sidebar-collapsed'}`}>
             <div 
               className={`sidebar-item ${currentView === 'home' ? 'active' : ''}`}
               onClick={goToHome}
@@ -1009,7 +1102,7 @@ function App() {
           </div>
           
           {/* Content Area */}
-          <div className={`content ${isSidebarOpen ? '' : 'content-expanded'}`}>
+          <div className={`content ${!isSidebarOpen ? 'content-expanded' : ''}`}>
             <h1 className="page-title">
               {currentView === 'home' && 'Recommended'}
               {currentView === 'trending' && 'Trending'}
@@ -1034,8 +1127,7 @@ function App() {
                     <div className="feedback-header">
                       <h2>Send Feedback</h2>
                       <button className="close-button" onClick={() => setCurrentView('home')}>×</button>
-                    </div>
-                    <p>We'd love to hear your thoughts! Please share your feedback with us.</p>
+                    </div>                    <p>We'd love to hear your thoughts! Please share your feedback with us.</p>
                     <div className="feedback-category">
                       <label htmlFor="feedback-category">Category:</label>
                       <select 
@@ -1158,7 +1250,6 @@ function App() {
                     <div className="video-card" key={video.id} onClick={() => selectVideo(video)}>
                       <div className="thumbnail-container">
                         <div className="thumbnail">
-                          <div className="thumbnail-name">{video.channel}</div>
                           <div className="duration">{video.duration}</div>
                         </div>
                         {/* Simplified 3-dot menu for video grid - only remove option */}
@@ -1195,7 +1286,6 @@ function App() {
                   <div className="video-card" key={video.id} onClick={() => selectVideo(video)}>
                     <div className="thumbnail-container">
                       <div className="thumbnail">
-                        <div className="thumbnail-name">{video.channel}</div>
                         <div className="duration">{video.duration}</div>
                       </div>
                       {/* Simplified 3-dot menu for video grid - only remove option */}

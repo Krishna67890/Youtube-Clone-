@@ -103,7 +103,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         },
         {
           id: '2',
-          username: 'Ankush Khakale',
+          username: 'Coding Master',
           text: 'Thanks for the tutorial. Can you make one on advanced topics?',
           timestamp: '1 day ago',
           likes: 12
@@ -248,11 +248,61 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   };
 
   // Get recommended videos (excluding current video)
-  const recommendedVideos = videos.filter(v => v.id !== video.id).slice(0, 10);
+  // Enhanced recommendation algorithm that prioritizes videos from the same category/channel
+  const recommendedVideos = (() => {
+    // First, try to find videos from the same channel
+    const sameChannelVideos = videos.filter(v => v.channel === video.channel && v.id !== video.id);
+    
+    // Then, try to find videos from the same category (based on thumbnail type)
+    const sameCategoryVideos = videos.filter(v => 
+      v.thumbnail === video.thumbnail && 
+      v.channel !== video.channel && 
+      v.id !== video.id
+    );
+    
+    // Then, include popular videos (those with higher view counts)
+    const popularVideos = videos
+      .filter(v => 
+        v.channel !== video.channel && 
+        v.thumbnail !== video.thumbnail && 
+        v.id !== video.id
+      )
+      .sort((a, b) => {
+        // Convert view counts to numbers for comparison
+        const aViews = a.views.endsWith('M') ? 
+          parseFloat(a.views) * 1000000 : 
+          a.views.endsWith('K') ? 
+          parseFloat(a.views) * 1000 : 
+          parseFloat(a.views);
+          
+        const bViews = b.views.endsWith('M') ? 
+          parseFloat(b.views) * 1000000 : 
+          b.views.endsWith('K') ? 
+          parseFloat(b.views) * 1000 : 
+          parseFloat(b.views);
+          
+        return bViews - aViews; // Sort descending by view count
+      });
+    
+    // Combine recommendations with priority: same channel > same category > popular
+    const allRecommendations = [
+      ...sameChannelVideos,
+      ...sameCategoryVideos,
+      ...popularVideos
+    ];
+    
+    // Remove duplicates and limit to 10 recommendations
+    const uniqueRecommendations = Array.from(
+      new Set(allRecommendations.map(v => v.id))
+    ).map(id => allRecommendations.find(v => v.id === id))
+    .filter((v): v is Video => v !== undefined); // Type guard to ensure we only have Video objects
+    
+    return uniqueRecommendations.slice(0, 10);
+  })();
 
   // Check if video should use YouTube embed
   const isYouTubeVideo = (title: string) => {
-    return title === 'Tu Hai Kahan' || title === 'Tu han Kahan' || title === '12 Bande' || title === 'Apa Fer Milaange';
+    return title === 'Tu Hai Kahan' || title === 'Tu han Kahan' || title === '12 Bande' || title === 'Apa Fer Milaange' || title === 'Murder' || title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab' || title === 'मित्र महामेळा 2025 ट्रेलर' || title === 'Sidha Swami Kavach' || title === 'Drama on Parts of Speech in English' || title === 'Identify a Tense||How to read a tense? ||English Tense' || title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....';
   };
 
   // Get YouTube video ID from URL
@@ -265,6 +315,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
     if (title === 'Apa Fer Milaange') {
       return 'Pp82_VdaKqE';
+    }
+    if (title === 'Murder') {
+      return 'Y2lWEVyO-qE';
+    }
+    if (title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab') {
+      return 'Nnr6RrlOu6U';
+    }
+    if (title === 'मित्र महामेळा 2025 ट्रेलर') {
+      return 'P9PZTG3r-tk';
+    }
+    if (title === 'Sidha Swami Kavach') {
+      return 'PTGOtnSTKdc';
+    }
+    if (title === 'Drama on Parts of Speech in English') {
+      return 'mkoyPYG_hTc';
+    }
+    if (title === 'Identify a Tense||How to read a tense? ||English Tense') {
+      return '1xfWu-FT9To';
+    }
+    if (title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....') {
+      return '9L_rSSWKKOE';
     }
     return '';
   };
@@ -284,6 +355,34 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     
     if (title === 'Apa Fer Milaange') {
       return 'https://youtu.be/Pp82_VdaKqE?list=RDPp82_VdaKqE';
+    }
+    
+    if (title === 'Murder') {
+      return 'https://youtu.be/Y2lWEVyO-qE?list=RDY2lWEVyO-qE';
+    }
+    
+    if (title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab') {
+      return 'https://youtu.be/Nnr6RrlOu6U';
+    }
+    
+    if (title === 'मित्र महामेळा 2025 ट्रेलर') {
+      return 'https://youtu.be/P9PZTG3r-tk';
+    }
+    
+    if (title === 'Sidha Swami Kavach') {
+      return 'https://youtu.be/PTGOtnSTKdc';
+    }
+    
+    if (title === 'Drama on Parts of Speech in English') {
+      return 'https://youtu.be/mkoyPYG_hTc';
+    }
+    
+    if (title === 'Identify a Tense||How to read a tense? ||English Tense') {
+      return 'https://youtu.be/1xfWu-FT9To';
+    }
+    
+    if (title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....') {
+      return 'https://youtu.be/9L_rSSWKKOE';
     }
     
     const videoMap: Record<string, string> = {
@@ -343,6 +442,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   onPlay={handleVideoPlay}
                   onPause={handleVideoPause}
                   onEnded={handleVideoEnd}
+                  playsInline // Important for mobile Safari
+                  controls={false} // We're using custom controls
                 >
                   <source src={getVideoSource(video.title)} type="video/mp4" />
                   Your browser does not support the video tag.

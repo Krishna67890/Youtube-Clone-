@@ -51,16 +51,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="modal-overlay" style={{ zIndex: 1000 }}>
-      <div className="modal-content">
+      <div className="auth-modal">
         <button className="close-button" onClick={onClose}>
           ×
         </button>
-        <h2>{isLogin ? 'Sign in' : 'Create account'}</h2>
-        {isLogin ? (
-          <LoginForm onToggleForm={toggleForm} prefillData={prefillData} />
-        ) : (
-          <RegisterForm onToggleForm={toggleForm} prefillData={prefillData} />
-        )}
+        <div className="auth-header">
+          <h2>{isLogin ? 'Sign in' : 'Create account'}</h2>
+        </div>
+        <div className="auth-form">
+          {isLogin ? (
+            <LoginForm onToggleForm={toggleForm} prefillData={prefillData} onLoginSuccess={onClose} />
+          ) : (
+            <RegisterForm onToggleForm={toggleForm} prefillData={prefillData} />
+          )}
+        </div>
         
         {/* Demo Accounts Information */}
         <div className="demo-users-info">
