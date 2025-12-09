@@ -5,9 +5,12 @@ import AuthModal from './components/auth/AuthModal';
 import VideoPlayer from './components/VideoPlayer';
 import VideoMenu from './components/VideoMenu';
 import PeerChat from './components/PeerChat';
+import AdminPanel from './Pages/Admin/AdminPanel';
 import { useTheme } from './contexts/ThemeContext';
+import axios from 'axios';
 import './App.css';
 import './enhanced-responsive.css'; // Import the enhanced responsive CSS
+import './components/admin/admin.css'; // Import admin styles
 
 // Define interfaces
 interface Video {
@@ -18,6 +21,7 @@ interface Video {
   timestamp: string;
   duration: string;
   thumbnail: string;
+  description?: string;
 }
 
 interface Message {
@@ -55,8 +59,15 @@ function App() {
   const [userVideos, setUserVideos] = useState<Video[]>([]); // Track user uploaded videos
   const [userShorts, setUserShorts] = useState<Video[]>([]); // Track user uploaded shorts
   const [historyVideos, setHistoryVideos] = useState<Video[]>([]); // Track watched videos history
+  
+  // New state for trending and shorts videos
+  const [trendingVideos, setTrendingVideos] = useState<any[]>([]);
+  const [shortsVideos, setShortsVideos] = useState<any[]>([]);
+  const [loadingTrending, setLoadingTrending] = useState(true);
+  const [loadingShorts, setLoadingShorts] = useState(true);
   const [searchQuery, setSearchQuery] = useState(''); // Search functionality
   const [searchResults, setSearchResults] = useState<Video[]>([]); // Search results
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(''); // Debounced search query
   const [peerIdInput, setPeerIdInput] = useState(''); // Peer ID input for connections
   
   // Peer chat states
@@ -170,6 +181,58 @@ function App() {
       });
     }
   }, [isAuthenticated]);
+
+  // Debounce search queries
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  // Perform search when debounced query changes
+  useEffect(() => {
+    if (debouncedSearchQuery.trim() !== '') {
+      handleSearch(debouncedSearchQuery);
+    } else {
+      setSearchResults([]);
+    }
+  }, [debouncedSearchQuery]);
+
+  // Fetch trending videos
+  useEffect(() => {
+    const fetchTrendingVideos = async () => {
+      try {
+        const response = await axios.get('/api/videos/trending');
+        setTrendingVideos(response.data);
+        setLoadingTrending(false);
+      } catch (error) {
+        console.error('Error fetching trending videos:', error);
+        setLoadingTrending(false);
+      }
+    };
+
+    fetchTrendingVideos();
+  }, []);
+
+  // Fetch shorts videos
+  useEffect(() => {
+    const fetchShortsVideos = async () => {
+      try {
+        const response = await axios.get('/api/videos/shorts');
+        setShortsVideos(response.data);
+        setLoadingShorts(false);
+      } catch (error) {
+        console.error('Error fetching shorts videos:', error);
+        setLoadingShorts(false);
+      }
+    };
+
+    fetchShortsVideos();
+  }, []);
 
   const openAuthModal = () => {
     setIsAuthModalOpen(true);
@@ -354,30 +417,11 @@ function App() {
   // Add user video/short functionality
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadTitle, setUploadTitle] = useState('');
+  const [uploadDescription, setUploadDescription] = useState('');
+  const [uploadChannel, setUploadChannel] = useState('');
   const [isShortUpload, setIsShortUpload] = useState(false);
 
-  const handleUploadVideo = (title: string, isShort: boolean = false) => {
-    const newVideo: Video = {
-      id: `user-${Date.now()}`,
-      title,
-      channel: user?.username || 'Your Channel',
-      views: '0',
-      timestamp: 'Just now',
-      duration: isShort ? '0:15' : '0:30', // Set correct durations: 15s for shorts, 30s for regular videos
-      thumbnail: isShort ? 'shorts' : 'user'
-    };
 
-    if (isShort) {
-      setUserShorts([...userShorts, newVideo]);
-    } else {
-      setUserVideos([...userVideos, newVideo]);
-    }
-    
-    // Close modal and reset form
-    setIsUploadModalOpen(false);
-    setUploadTitle('');
-    setIsShortUpload(false);
-  };
 
   // Function to generate a random video with specified duration
   const generateRandomVideo = (duration: string, idPrefix: string = 'gen'): Video => {
@@ -467,19 +511,27 @@ function App() {
       case 'music':
         return videos.filter(v => v.thumbnail === 'music' || v.title.includes('Tu han Kahan') || v.title.includes('12 Bande') || v.title.includes('Apa Fer Milaange'));
       case 'shorts':
-        // Generate 10 new random videos with 15s duration for shorts
-        const newShorts = [];
-        for (let i = 0; i < 10; i++) {
-          newShorts.push(generateRandomVideo('0:15', 'short'));
-        }
-        return newShorts;
+        // Return real shorts videos from backend
+        return shortsVideos.map(video => ({
+          id: video._id,
+          title: video.title,
+          channel: video.uploader?.username || 'Unknown Channel',
+          views: `${video.views} views`,
+          timestamp: 'Recently',
+          duration: `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}`,
+          thumbnail: video.thumbnail
+        }));
       case 'trending':
-        // Generate 10 new random videos with 15s duration for trending
-        const newTrending = [];
-        for (let i = 0; i < 10; i++) {
-          newTrending.push(generateRandomVideo('0:15', 'trend'));
-        }
-        return newTrending;
+        // Return real trending videos from backend
+        return trendingVideos.map(video => ({
+          id: video._id,
+          title: video.title,
+          channel: video.uploader?.username || 'Unknown Channel',
+          views: `${video.views} views`,
+          timestamp: 'Recently',
+          duration: `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}`,
+          thumbnail: video.thumbnail
+        }));
       default:
         // Home page: Generate 15 new random videos with 30s duration
         const newHomeVideos = [];
@@ -748,7 +800,7 @@ function App() {
   };
 
   // Search function
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
     
     if (query.trim() === '') {
@@ -756,26 +808,86 @@ function App() {
       return;
     }
     
-    // Combine all videos including user videos for search
-    const allVideos = [...videos, ...userVideos, ...userShorts];
-    
-    // Filter videos by title (case insensitive)
-    const results = allVideos.filter(video => 
-      video.title.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    setSearchResults(results);
+    try {
+      // Search videos using backend API
+      const response = await axios.get(`/api/videos/search?q=${encodeURIComponent(query)}`);
+      
+      // Transform backend video data to match frontend format
+      const results = response.data.map((video: any) => ({
+        id: video._id,
+        title: video.title,
+        channel: video.uploader?.username || 'Unknown Channel',
+        views: `${video.views} views`,
+        timestamp: 'Recently',
+        duration: `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}`,
+        thumbnail: video.thumbnail
+      }));
+      
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching videos:', error);
+      // Fallback to client-side search if API fails
+      // Include the videos we want to be searchable
+      const searchableVideos = [
+        ...videos, 
+        ...userVideos, 
+        ...userShorts,
+        // Add the specific videos we want to be found
+        {
+          id: 'minecraft-1',
+          title: 'MINECRAFT HARDCORE LAST EPISODE.... reason..... chainal Atharva Gamerz',
+          channel: 'Atharva Gamerz',
+          views: '1.2M views',
+          timestamp: '2 days ago',
+          duration: '20:00',
+          thumbnail: 'gaming'
+        },
+        {
+          id: 'pal-pal-1',
+          title: 'Pal Pal Chainal | AFUSIC',
+          channel: 'AFUSIC',
+          views: '500K views',
+          timestamp: '1 month ago',
+          duration: '4:00',
+          thumbnail: 'music'
+        },
+        {
+          id: 'mitra-mela-1',
+          title: 'Maha Mitra Mela 2025 trailer chainal Ajaysing Patil',
+          channel: 'Ajaysing Patil',
+          views: '100K views',
+          timestamp: 'Recently',
+          duration: '3:00',
+          thumbnail: 'entertainment'
+        },
+        {
+          id: 'kanbai-1',
+          title: 'Kanbai Visarjan Mahale parivar chainal ShivGauri\'s Universe',
+          channel: 'ShivGauri\'s Universe',
+          views: '50K views',
+          timestamp: 'Recently',
+          duration: '5:00',
+          thumbnail: 'religious'
+        }
+      ];
+      
+      const results = searchableVideos.filter(video => 
+        video.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(results);
+    }
   };
 
   // Handle search input change
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearch(e.target.value);
+    setSearchQuery(e.target.value);
   };
 
   // Handle search submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Search is already handled by input change, but we can add additional logic here if needed
+    // Trigger immediate search
+    setDebouncedSearchQuery(searchQuery);
   };
 
   return (
@@ -854,18 +966,63 @@ function App() {
                 <form onSubmit={(e) => {
                   e.preventDefault();
                   if (uploadTitle.trim()) {
-                    handleUploadVideo(uploadTitle, isShortUpload);
+                    // Create a more detailed video object
+                    const newVideo: Video = {
+                      id: `user-${Date.now()}`,
+                      title: uploadTitle,
+                      channel: uploadChannel || user?.username || 'Your Channel',
+                      views: '0',
+                      timestamp: 'Just now',
+                      duration: isShortUpload ? '0:15' : '0:30',
+                      thumbnail: isShortUpload ? 'shorts' : 'user',
+                      description: uploadDescription || ''
+                    };
+                    
+                    // Add to user videos
+                    setUserVideos([newVideo, ...userVideos]);
+                    
+                    // Close modal and reset form
+                    setIsUploadModalOpen(false);
+                    setUploadTitle('');
+                    setUploadDescription('');
+                    setUploadChannel('');
+                    setIsShortUpload(false);
                   }
                 }}>
                   <div className="form-group">
+                    <label htmlFor="upload-title">Video Title</label>
                     <input
+                      id="upload-title"
                       type="text"
-                      placeholder="Video title"
+                      placeholder="Enter video title"
                       value={uploadTitle}
                       onChange={(e) => setUploadTitle(e.target.value)}
                       required
                     />
                   </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="upload-description">Description</label>
+                    <textarea
+                      id="upload-description"
+                      placeholder="Enter video description"
+                      value={uploadDescription}
+                      onChange={(e) => setUploadDescription(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="upload-channel">Channel Name</label>
+                    <input
+                      id="upload-channel"
+                      type="text"
+                      placeholder="Enter channel name"
+                      value={uploadChannel}
+                      onChange={(e) => setUploadChannel(e.target.value)}
+                    />
+                  </div>
+                  
                   <div className="form-group">
                     <label>
                       <input
@@ -876,8 +1033,9 @@ function App() {
                       Upload as Short (15 seconds)
                     </label>
                   </div>
+                  
                   <button type="submit" className="btn btn-primary">
-                    Upload
+                    Upload Video
                   </button>
                 </form>
               </div>
@@ -897,19 +1055,19 @@ function App() {
         <div className="mobile-menu-content">
           <div className="mobile-menu-section">
             <h3>Navigation</h3>
-            <div className="mobile-menu-item" onClick={() => { goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">🏠</div>
               <div className="mobile-menu-text">Home</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('trending'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('trending'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">🔥</div>
               <div className="mobile-menu-text">Trending</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('shorts'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('shorts'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">⏱️</div>
               <div className="mobile-menu-text">Shorts</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('subscriptions'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('subscriptions'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">📺</div>
               <div className="mobile-menu-text">Subscriptions</div>
             </div>
@@ -917,27 +1075,27 @@ function App() {
           
           <div className="mobile-menu-section">
             <h3>Library</h3>
-            <div className="mobile-menu-item" onClick={() => { goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">📚</div>
               <div className="mobile-menu-text">Library</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('history'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('history'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">🕒</div>
               <div className="mobile-menu-text">History</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('liked'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('liked'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">👍</div>
               <div className="mobile-menu-text">Liked videos</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('watchlater'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('watchlater'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">⏱️</div>
               <div className="mobile-menu-text">Watch later</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('yourvideos'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('yourvideos'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">🎥</div>
               <div className="mobile-menu-text">Your videos</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('downloads'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('downloads'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">⬇️</div>
               <div className="mobile-menu-text">Downloads</div>
             </div>
@@ -945,11 +1103,11 @@ function App() {
           
           <div className="mobile-menu-section">
             <h3>Explore</h3>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('gaming'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('gaming'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">🎮</div>
               <div className="mobile-menu-text">Gaming</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('music'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('music'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">🎵</div>
               <div className="mobile-menu-text">Music</div>
             </div>
@@ -957,21 +1115,26 @@ function App() {
           
           <div className="mobile-menu-section">
             <h3>Settings</h3>
-            <div className="mobile-menu-item" onClick={() => { setShowAboutUs(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAboutUs(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">ℹ️</div>
               <div className="mobile-menu-text">About us</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setShowSettings(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSettings(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">⚙️</div>
               <div className="mobile-menu-text">Settings</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setShowHelp(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowHelp(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">❓</div>
               <div className="mobile-menu-text">Help</div>
             </div>
-            <div className="mobile-menu-item" onClick={() => { setCurrentView('feedback'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('feedback'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
               <div className="mobile-menu-icon">💬</div>
               <div className="mobile-menu-text">Send feedback</div>
+            </div>
+            {/* Upload Video Item */}
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsUploadModalOpen(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+              <div className="mobile-menu-icon">⬆️</div>
+              <div className="mobile-menu-text">Upload Video</div>
             </div>
           </div>
         </div>
@@ -1094,6 +1257,10 @@ function App() {
               <div className="sidebar-icon">💬</div>
               <div className="sidebar-text">Send feedback</div>
             </div>
+            <div className="sidebar-item" onClick={() => setCurrentView('admin')}>
+              <div className="sidebar-icon">⬆️</div>
+              <div className="sidebar-text">Upload Videos</div>
+            </div>
             <div className="sidebar-item" onClick={() => setCurrentView('copyright')}>
               <div className="sidebar-icon">©️</div>
               <div className="sidebar-text">Copyright</div>
@@ -1118,6 +1285,7 @@ function App() {
               {currentView === 'shorts' && 'Shorts'}
               {currentView === 'feedback' && 'Send Feedback'}
               {currentView === 'copyright' && 'Copyright Information'}
+              {currentView === 'admin' && 'Upload Videos'}
             </h1>
             
             <div className="video-grid">
@@ -1243,6 +1411,8 @@ function App() {
                     </div>
                   </div>
                 </div>
+              ) : currentView === 'admin' ? (
+                <AdminPanel />
               ) : searchQuery.trim() !== '' ? (
                 // Display search results when search query is not empty
                 searchResults.length > 0 ? (

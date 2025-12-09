@@ -18,9 +18,9 @@ app.use(express.json({ extended: false }));
 
 // Define Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/videos', require('./routes/videos'));
 // Add other routes here as they are implemented
 // app.use('/api/users', require('./routes/users'));
-// app.use('/api/videos', require('./routes/videos'));
 // app.use('/api/comments', require('./routes/comments'));
 
 // Serve static assets in production

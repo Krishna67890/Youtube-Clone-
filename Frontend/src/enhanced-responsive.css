@@ -568,12 +568,13 @@
   left: 0;
   width: 280px; /* Smaller width */
   height: 100%;
-  background-color: var(--bg-modal);
+  background-color: #ffffff; /* Light background for mobile menu */
   z-index: 1000;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   overflow-y: auto;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: block; /* Ensure mobile menu is displayed */
 }
 
 .mobile-menu-open {
@@ -606,7 +607,7 @@
 }
 
 .mobile-menu-header .logo span:last-child {
-  color: var(--text-primary);
+  color: #030303; /* Dark text for better visibility */
 }
 
 .mobile-menu-content {
@@ -620,7 +621,7 @@
 .mobile-menu-section h3 {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #030303; /* Dark text for better visibility */
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border-light);
@@ -634,10 +635,15 @@
   margin-bottom: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  user-select: none; /* Prevent text selection during clicks */
+  -webkit-user-select: none; /* Safari support */
+  -moz-user-select: none; /* Firefox support */
+  -ms-user-select: none; /* IE support */
 }
 
-.mobile-menu-item:hover {
-  background-color: var(--bg-hover);
+.mobile-menu-item:active {
+  opacity: 1 !important; /* Ensure text remains visible during active state */
+  transition: none; /* Remove transitions during active state */
 }
 
 .mobile-menu-icon {
@@ -645,12 +651,16 @@
   font-size: 18px;
   width: 24px;
   text-align: center;
+  color: #030303; /* Dark icon for better visibility */
+  pointer-events: none; /* Prevent icon from capturing click events */
 }
 
 .mobile-menu-text {
   font-size: 16px;
-  color: var(--text-primary);
+  color: #030303; /* Dark text for better visibility */
   font-weight: 500;
+  pointer-events: none; /* Prevent text from capturing click events */
+  transition: none; /* Remove transitions to prevent flickering */
 }
 
 .mobile-menu-overlay {
@@ -664,6 +674,7 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
+  display: block; /* Ensure overlay is displayed */
 }
 
 .mobile-menu-open + .mobile-menu-overlay {
@@ -671,13 +682,37 @@
   visibility: visible;
 }
 
-/* Mobile menu is available on all devices but primarily intended for mobile/small screens */
-.mobile-menu {
-  display: block;
+/* Dark mode overrides */
+[data-theme="dark"] .mobile-menu {
+  background-color: #0f0f0f; /* Dark background for mobile menu in dark mode */
 }
 
-.mobile-menu-overlay {
-  display: block;
+[data-theme="dark"] .mobile-menu-text,
+[data-theme="dark"] .mobile-menu-section h3,
+[data-theme="dark"] .mobile-menu-header .logo span:last-child {
+  color: #ffffff; /* White text for better visibility in dark mode */
+}
+
+[data-theme="dark"] .mobile-menu-icon {
+  color: #ffffff; /* White icon for better visibility in dark mode */
+}
+
+[data-theme="dark"] .mobile-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Lighter hover effect for dark mode */
+}
+
+[data-theme="dark"] .mobile-menu-item:active {
+  background-color: rgba(255, 255, 255, 0.2); /* Even lighter active effect for dark mode */
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .mobile-menu-header {
+  background-color: #0f0f0f; /* Dark background for header in dark mode */
+  border-bottom: 1px solid #303030; /* Darker border for dark mode */
+}
+
+[data-theme="dark"] .mobile-menu-section h3 {
+  border-bottom: 1px solid #303030; /* Darker border for dark mode */
 }
 
 /* Adjust mobile menu width for different screen sizes */
@@ -973,4 +1008,279 @@
     font-size: 11px;
     min-width: 70px;
   }
+}
+
+/* Enhanced Upload Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 24px;
+}
+
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-primary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-color-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-hover);
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Mobile-specific upload form adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    max-height: 95vh;
+  }
+  
+  .modal-content h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px 14px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  /* Mobile-specific enhancements for upload form */
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    font-size: 14px;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+  }
+  
+  /* Better touch targets for mobile */
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    min-height: 44px; /* Minimum touch target size */
+  }
+  
+  /* Improve checkbox accessibility on mobile */
+  .form-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+  
+  /* Better spacing for mobile forms */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  /* Ensure form is scrollable on small screens */
+  .modal-content {
+    max-height: 85vh;
+  }
+}
+
+/* Prefill section styles */
+.prefill-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.prefill-section h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.prefill-section .btn {
+  margin-right: 12px;
+  margin-bottom: 12px;
+}
+
+.prefill-section .btn:last-child {
+  margin-right: 0;
+}
+
+/* Message styles */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.message.error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .modal-content {
+  background-color: #181818;
+  border: 1px solid #303030;
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+  background-color: #0f0f0f;
+  border-color: #303030;
+}
+
+[data-theme="dark"] .message.success {
+  background-color: rgba(76, 175, 80, 0.15);
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+[data-theme="dark"] .message.error {
+  background-color: rgba(244, 67, 54, 0.15);
+  border-color: rgba(244, 67, 54, 0.5);
 }

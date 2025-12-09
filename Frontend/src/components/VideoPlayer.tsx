@@ -302,7 +302,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Check if video should use YouTube embed
   const isYouTubeVideo = (title: string) => {
-    return title === 'Tu Hai Kahan' || title === 'Tu han Kahan' || title === '12 Bande' || title === 'Apa Fer Milaange' || title === 'Murder' || title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab' || title === 'मित्र महामेळा 2025 ट्रेलर' || title === 'Sidha Swami Kavach' || title === 'Drama on Parts of Speech in English' || title === 'Identify a Tense||How to read a tense? ||English Tense' || title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....';
+    return title === 'Tu Hai Kahan' || title === 'Tu han Kahan' || title === '12 Bande' || title === 'Apa Fer Milaange' || title === 'Murder' || title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab' || title === 'मित्र महामेळा 2025 ट्रेलर' || title === 'Sidha Swami Kavach' || title === 'Drama on Parts of Speech in English' || title === 'Identify a Tense||How to read a tense? ||English Tense' || title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....' || title === 'MINECRAFT HARDCORE LAST EPISODE.... reason..... chainal Atharva Gamerz' || title.includes('Pal Pal Chainal') || title.includes('Kanbai Visarjan Mahale parivar') || title.includes('Maha Mitra Mela 2025 trailer') || title.includes('Drama on Parts of Speech in English chainal Shubhangi Patil') || title.includes('Sidha Swami Kavach and chainal Suhasini Patil') || title.includes('Identify a Tense||How to read a tense? ||English Tense chainal Ajay English Word');
   };
 
   // Get YouTube video ID from URL
@@ -319,23 +319,26 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (title === 'Murder') {
       return 'Y2lWEVyO-qE';
     }
-    if (title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab') {
+    if (title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab' || title.includes('Kanbai Visarjan Mahale parivar')) {
       return 'Nnr6RrlOu6U';
     }
-    if (title === 'मित्र महामेळा 2025 ट्रेलर') {
+    if (title === 'मित्र महामेळा 2025 ट्रेलर' || title.includes('Maha Mitra Mela 2025 trailer')) {
       return 'P9PZTG3r-tk';
     }
-    if (title === 'Sidha Swami Kavach') {
+    if (title === 'Sidha Swami Kavach' || title.includes('Sidha Swami Kavach and chainal Suhasini Patil')) {
       return 'PTGOtnSTKdc';
     }
-    if (title === 'Drama on Parts of Speech in English') {
+    if (title === 'Drama on Parts of Speech in English' || title.includes('Drama on Parts of Speech in English chainal Shubhangi Patil')) {
       return 'mkoyPYG_hTc';
     }
-    if (title === 'Identify a Tense||How to read a tense? ||English Tense') {
+    if (title === 'Identify a Tense||How to read a tense? ||English Tense' || title.includes('Identify a Tense||How to read a tense? ||English Tense chainal Ajay English Word')) {
       return '1xfWu-FT9To';
     }
-    if (title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....') {
+    if (title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....' || title === 'MINECRAFT HARDCORE LAST EPISODE.... reason..... chainal Atharva Gamerz') {
       return '9L_rSSWKKOE';
+    }
+    if (title.includes('Pal Pal Chainal')) {
+      return 'AbkEmIgJMcU';
     }
     return '';
   };
@@ -361,28 +364,32 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       return 'https://youtu.be/Y2lWEVyO-qE?list=RDY2lWEVyO-qE';
     }
     
-    if (title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab') {
+    if (title === 'Kanbai | कानबाई विसर्जन !!! महाले परिवार | दहिगांव संत | Day 2 | ShivGauri Video Lab' || title.includes('Kanbai Visarjan Mahale parivar')) {
       return 'https://youtu.be/Nnr6RrlOu6U';
     }
     
-    if (title === 'मित्र महामेळा 2025 ट्रेलर') {
+    if (title === 'मित्र महामेळा 2025 ट्रेलर' || title.includes('Maha Mitra Mela 2025 trailer')) {
       return 'https://youtu.be/P9PZTG3r-tk';
     }
     
-    if (title === 'Sidha Swami Kavach') {
+    if (title === 'Sidha Swami Kavach' || title.includes('Sidha Swami Kavach and chainal Suhasini Patil')) {
       return 'https://youtu.be/PTGOtnSTKdc';
     }
     
-    if (title === 'Drama on Parts of Speech in English') {
+    if (title === 'Drama on Parts of Speech in English' || title.includes('Drama on Parts of Speech in English chainal Shubhangi Patil')) {
       return 'https://youtu.be/mkoyPYG_hTc';
     }
     
-    if (title === 'Identify a Tense||How to read a tense? ||English Tense') {
+    if (title === 'Identify a Tense||How to read a tense? ||English Tense' || title.includes('Identify a Tense||How to read a tense? ||English Tense chainal Ajay English Word')) {
       return 'https://youtu.be/1xfWu-FT9To';
     }
     
-    if (title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....') {
+    if (title === 'MINECRAFT HARDCORE LAST EPISODE.... reason.....' || title === 'MINECRAFT HARDCORE LAST EPISODE.... reason..... chainal Atharva Gamerz') {
       return 'https://youtu.be/9L_rSSWKKOE';
+    }
+    
+    if (title.includes('Pal Pal Chainal')) {
+      return 'https://youtu.be/AbkEmIgJMcU?list=RDAbkEmIgJMcU';
     }
     
     const videoMap: Record<string, string> = {
