@@ -71,6 +71,10 @@ The application includes the following videos:
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
+## Recent Fixes
+
+- Fixed TypeScript isolatedModules compilation error by adding export statements to empty files
+
 ## License
 
 This project is licensed under the MIT License.
