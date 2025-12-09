@@ -7,6 +7,8 @@ import VideoMenu from './components/VideoMenu';
 import PeerChat from './components/PeerChat';
 import AdminPanel from './Pages/Admin/AdminPanel';
 import VideoCardSkeleton from './components/common/VideoCard/VideoCardSkeleton';
+import MobileMenu from './components/common/Sidebar/MobileMenu';
+import MobileBottomNav from './components/common/MobileBottomNav';
 import { useTheme } from './contexts/ThemeContext';
 import axios from 'axios';
 import './App.css';
