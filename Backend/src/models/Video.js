@@ -4,11 +4,13 @@ const videoSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    index: true // Add index for faster searches
   },
   description: {
     type: String,
-    required: true
+    required: true,
+    index: true // Add index for faster searches
   },
   url: {
     type: String,
@@ -46,10 +48,12 @@ const videoSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    default: 'Music'
+    default: 'Music',
+    index: true // Add index for faster searches
   },
   tags: [{
-    type: String
+    type: String,
+    index: true // Add index for faster searches
   }],
   privacy: {
     type: String,
@@ -60,6 +64,14 @@ const videoSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+});
+
+// Create text index for search functionality
+videoSchema.index({
+  title: 'text',
+  description: 'text',
+  category: 'text',
+  tags: 'text'
 });
 
 module.exports = mongoose.model('Video', videoSchema);

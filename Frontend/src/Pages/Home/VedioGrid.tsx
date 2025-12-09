@@ -36,8 +36,24 @@ const VideoGrid: React.FC = () => {
     fetchVideos();
   }, []);
 
+  // Show loading skeletons while fetching data
   if (loading) {
-    return <div>Loading videos...</div>;
+    return (
+      <div className="video-grid">
+        {[...Array(12)].map((_, index) => (
+          <div key={index} className="video-card-skeleton">
+            <div className="skeleton-thumbnail"></div>
+            <div className="video-info">
+              <div className="skeleton-avatar"></div>
+              <div className="skeleton-text">
+                <div className="skeleton-line"></div>
+                <div className="skeleton-line" style={{ width: '60%' }}></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   // Helper function to format duration from seconds to MM:SS

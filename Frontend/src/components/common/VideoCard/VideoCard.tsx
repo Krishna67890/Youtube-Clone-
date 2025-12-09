@@ -30,13 +30,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
       </Link>
       
       <div className="video-info">
+        <div className="channel-avatar"></div>
         <div className="video-details">
           <h3 className="video-title">
             <Link to={`/watch/${id}`}>{title}</Link>
           </h3>
           <p className="channel-name">{channelName}</p>
           <p className="video-meta">
-            {views} views • {timestamp}
+            {views.toLocaleString()} views • {timestamp}
           </p>
         </div>
       </div>

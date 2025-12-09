@@ -11,11 +11,28 @@ const connectDB = async () => {
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    return conn;
   } catch (err) {
     console.error('Database connection error:', err.message);
-    // Don't exit the process, just log the error
-    // process.exit(1);
+    // Exit process with failure
+    process.exit(1);
   }
 };
+
+// Handle connection events
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+// Gracefully close connection
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  console.log('MongoDB connection closed through app termination');
+  process.exit(0);
+});
 
 module.exports = connectDB;

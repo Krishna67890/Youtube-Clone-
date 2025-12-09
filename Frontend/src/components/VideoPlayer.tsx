@@ -66,12 +66,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
 
   // Load or initialize video state when video changes
   useEffect(() => {
@@ -138,6 +142,47 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [comments, showComments]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!videoRef.current) return;
+      
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowRight':
+          seekForward(5);
+          break;
+        case 'ArrowLeft':
+          seekBackward(5);
+          break;
+        case 'ArrowUp':
+          adjustVolume(0.1);
+          break;
+        case 'ArrowDown':
+          adjustVolume(-0.1);
+          break;
+        case 'm':
+        case 'M':
+          toggleMute();
+          break;
+        case 'f':
+        case 'F':
+          toggleFullscreen();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isPlaying, currentTime, volume, isMuted, isFullscreen]);
+
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -174,6 +219,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
+      videoRef.current.playbackRate = playbackRate;
     }
   };
 
@@ -191,6 +237,84 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (videoRef.current) {
       videoRef.current.volume = newVolume;
     }
+    if (newVolume > 0) {
+      setIsMuted(false);
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      if (isMuted) {
+        videoRef.current.volume = volume;
+        setIsMuted(false);
+      } else {
+        videoRef.current.volume = 0;
+        setIsMuted(true);
+      }
+    }
+  };
+
+  const seekForward = (seconds: number) => {
+    if (videoRef.current) {
+      const newTime = Math.min(currentTime + seconds, duration);
+      videoRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const seekBackward = (seconds: number) => {
+    if (videoRef.current) {
+      const newTime = Math.max(currentTime - seconds, 0);
+      videoRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const adjustVolume = (amount: number) => {
+    const newVolume = Math.min(Math.max(volume + amount, 0), 1);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+    }
+    if (newVolume > 0) {
+      setIsMuted(false);
+    } else {
+      setIsMuted(true);
+    }
+  };
+
+  const changePlaybackRate = (rate: number) => {
+    setPlaybackRate(rate);
+    if (videoRef.current) {
+      videoRef.current.playbackRate = rate;
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (!playerContainerRef.current) return;
+    
+    if (!isFullscreen) {
+      if (playerContainerRef.current.requestFullscreen) {
+        playerContainerRef.current.requestFullscreen();
+      } else if ((playerContainerRef.current as any).webkitRequestFullscreen) {
+        (playerContainerRef.current as any).webkitRequestFullscreen();
+      } else if ((playerContainerRef.current as any).mozRequestFullScreen) {
+        (playerContainerRef.current as any).mozRequestFullScreen();
+      } else if ((playerContainerRef.current as any).msRequestFullscreen) {
+        (playerContainerRef.current as any).msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
+    }
+    setIsFullscreen(!isFullscreen);
   };
 
   const toggleLike = () => {
@@ -245,6 +369,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!videoRef.current) return;
+    
+    const progressBar = e.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    const newTime = pos * duration;
+    
+    videoRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
   };
 
   // Get recommended videos (excluding current video)
@@ -399,21 +535,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return videoMap[title] || 'https://example.com/default-video.mp4';
   };
 
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!videoRef.current) return;
-    
-    const progressBar = e.currentTarget;
-    const rect = progressBar.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    const newTime = pos * duration;
-    
-    videoRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
   return (
     <div className="video-player-overlay">
-      <div className="video-player-container">
+      <div className="video-player-container" ref={playerContainerRef}>
         <div className="video-player-header">
           <h2>{video.title}</h2>
           <div className="player-controls">
@@ -461,6 +585,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             {/* Video controls */}
             {!isYouTubeVideo(video.title) && (
               <div className="video-controls">
+                {/* Progress bar */}
                 <div className="progress-container" onClick={handleProgressClick}>
                   <div 
                     className="progress-bar" 
@@ -472,12 +597,47 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   </div>
                 </div>
                 
+                {/* Control buttons */}
                 <div className="controls-row">
                   <div className="left-controls">
-                    <button className="control-button" onClick={togglePlay}>
+                    <button className="control-button" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
                       {isPlaying ? '⏸' : '▶'}
                     </button>
-                    <span className="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
+                    <button className="control-button" onClick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
+                      {isMuted ? '🔇' : volume === 0 ? '🔇' : volume < 0.5 ? '🔈' : '🔊'}
+                    </button>
+                    <div className="volume-container">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={isMuted ? 0 : volume}
+                        onChange={handleVolumeChange}
+                        className="volume-slider"
+                        aria-label="Volume control"
+                      />
+                    </div>
+                    <span className="time-display" aria-label="Current time and duration">{formatTime(currentTime)} / {formatTime(duration)}</span>
+                  </div>
+                  
+                  <div className="right-controls">
+                    <select 
+                      className="quality-selector"
+                      value={playbackRate}
+                      onChange={(e) => changePlaybackRate(parseFloat(e.target.value))}
+                      aria-label="Playback speed"
+                    >
+                      <option value="0.5">0.5x</option>
+                      <option value="0.75">0.75x</option>
+                      <option value="1">Normal</option>
+                      <option value="1.25">1.25x</option>
+                      <option value="1.5">1.5x</option>
+                      <option value="2">2x</option>
+                    </select>
+                    <button className="control-button" onClick={toggleFullscreen} aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}>
+                      {isFullscreen ? '⛶' : '⛶'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -485,19 +645,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
             {/* Video actions */}
             <div className="video-actions">
-              <button className={`action-button ${liked ? 'liked' : ''}`} onClick={toggleLike}>
+              <button className={`action-button ${liked ? 'liked' : ''}`} onClick={toggleLike} aria-label={liked ? 'Unlike video' : 'Like video'}>
                 {liked ? '❤️' : '🤍'} Like
               </button>
-              <button className="action-button" onClick={toggleComments}>
+              <button className="action-button" onClick={toggleComments} aria-label="Show comments">
                 💬 Comment ({comments.length})
               </button>
-              <button className="action-button">↗️ Share</button>
+              <button className="action-button" aria-label="Share video">↗️ Share</button>
               
               {/* Subscribe button in video player */}
               {onSubscribe && (
                 <button 
                   className={`action-button ${isSubscribed ? 'subscribed' : ''}`}
                   onClick={handleSubscribeClick}
+                  aria-label={isSubscribed ? 'Unsubscribe from channel' : 'Subscribe to channel'}
                 >
                   {isSubscribed ? '✅ Subscribed' : '➕ Subscribe'}
                 </button>
@@ -508,6 +669,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 <button 
                   className={`action-button notification-toggle ${notificationsEnabled ? 'enabled' : 'disabled'}`}
                   onClick={handleNotificationToggle}
+                  aria-label={notificationsEnabled ? 'Turn off notifications' : 'Turn on notifications'}
                 >
                   {notificationsEnabled ? '🔔 Notifications ON' : '🔕 Notifications OFF'}
                 </button>
@@ -528,19 +690,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               />
               
               {/* Download button in video player actions */}
-              <button className="action-button" onClick={() => onDownload && onDownload(video.id)}>
+              <button className="action-button" onClick={() => onDownload && onDownload(video.id)} aria-label="Download video">
                 ⬇️ Download
               </button>
             </div>
             
             {/* Comments section */}
             {showComments && (
-              <div className="comments-section">
+              <div className="comments-section" role="region" aria-label="Video comments">
                 <h3>Comments ({comments.length})</h3>
                 <div className="comments-list">
                   {comments.map(comment => (
                     <div className="comment-item" key={comment.id}>
-                      <div className="comment-avatar"></div>
+                      <div className="comment-avatar" aria-hidden="true"></div>
                       <div className="comment-content">
                         <div className="comment-header">
                           <span className="comment-username">{comment.username}</span>
@@ -548,8 +710,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         </div>
                         <div className="comment-text">{comment.text}</div>
                         <div className="comment-actions">
-                          <button className="comment-action-button">👍 {comment.likes}</button>
-                          <button className="comment-action-button">Reply</button>
+                          <button className="comment-action-button" aria-label={`Like comment by ${comment.username}`}>👍 {comment.likes}</button>
+                          <button className="comment-action-button" aria-label={`Reply to comment by ${comment.username}`}>Reply</button>
                         </div>
                       </div>
                     </div>
@@ -558,20 +720,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 </div>
                 <form className="comment-form" onSubmit={handleAddComment}>
                   <div className="comment-input-container">
-                    <div className="comment-avatar-small"></div>
+                    <div className="comment-avatar-small" aria-hidden="true"></div>
                     <input
                       type="text"
                       placeholder="Add a comment..."
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       className="comment-input"
+                      aria-label="Write a comment"
                     />
                   </div>
                   <div className="comment-form-actions">
-                    <button type="button" className="cancel-button" onClick={() => setShowComments(false)}>
+                    <button type="button" className="cancel-button" onClick={() => setShowComments(false)} aria-label="Cancel commenting">
                       Cancel
                     </button>
-                    <button type="submit" className="submit-button" disabled={!comment.trim()}>
+                    <button type="submit" className="submit-button" disabled={!comment.trim()} aria-label="Post comment">
                       Comment
                     </button>
                   </div>
@@ -581,7 +744,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
           
           {/* Recommendations sidebar */}
-          <div className="recommendations-sidebar">
+          <div className="recommendations-sidebar" role="region" aria-label="Recommended videos">
             <h3>Up next</h3>
             <div className="recommendations-list">
               {recommendedVideos.map(recVideo => (
@@ -589,6 +752,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   className="recommendation-item" 
                   key={recVideo.id}
                   onClick={() => onLoadRecommendedVideo(recVideo)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onLoadRecommendedVideo(recVideo);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Play ${recVideo.title} by ${recVideo.channel}`}
                 >
                   <div className="recommendation-thumbnail">
                     <div className="duration">{recVideo.duration}</div>

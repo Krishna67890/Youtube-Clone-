@@ -6,6 +6,7 @@ import VideoPlayer from './components/VideoPlayer';
 import VideoMenu from './components/VideoMenu';
 import PeerChat from './components/PeerChat';
 import AdminPanel from './Pages/Admin/AdminPanel';
+import VideoCardSkeleton from './components/common/VideoCard/VideoCardSkeleton';
 import { useTheme } from './contexts/ThemeContext';
 import axios from 'axios';
 import './App.css';
@@ -68,6 +69,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState(''); // Search functionality
   const [searchResults, setSearchResults] = useState<Video[]>([]); // Search results
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(''); // Debounced search query
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]); // Search suggestions
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false); // Show/hide search suggestions
   const [peerIdInput, setPeerIdInput] = useState(''); // Peer ID input for connections
   
   // Peer chat states
@@ -880,7 +883,69 @@ function App() {
 
   // Handle search input change
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // Show search suggestions when there's input
+    if (value.trim() !== '') {
+      setShowSearchSuggestions(true);
+      
+      // Generate search suggestions based on popular searches
+      const popularSearches = [
+        'Music',
+        'Gaming',
+        'News',
+        'Sports',
+        'Learning',
+        'Fashion',
+        'Beauty',
+        'Comedy',
+        'Cooking',
+        'Travel',
+        'Technology',
+        'Fitness',
+        'Cars',
+        'Animation',
+        'Education',
+        'Science',
+        'How-to',
+        'DIY',
+        'Pets',
+        'Vlogs'
+      ];
+      
+      // Filter suggestions based on input
+      const filteredSuggestions = popularSearches.filter(suggestion => 
+        suggestion.toLowerCase().includes(value.toLowerCase())
+      );
+      
+      setSearchSuggestions(filteredSuggestions.slice(0, 8)); // Limit to 8 suggestions
+    } else {
+      setShowSearchSuggestions(false);
+      setSearchSuggestions([]);
+    }
+  };
+  
+  // Handle search suggestion click
+  const handleSearchSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSearchSuggestions(false);
+    setDebouncedSearchQuery(suggestion);
+  };
+  
+  // Handle search input blur (hide suggestions after delay)
+  const handleSearchInputBlur = () => {
+    // Use timeout to allow clicking on suggestions
+    setTimeout(() => {
+      setShowSearchSuggestions(false);
+    }, 200);
+  };
+  
+  // Handle search input focus (show suggestions)
+  const handleSearchInputFocus = () => {
+    if (searchQuery.trim() !== '') {
+      setShowSearchSuggestions(true);
+    }
   };
 
   // Handle search submission
@@ -892,6 +957,9 @@ function App() {
 
   return (
     <div className="App">
+      {/* Skip to main content link for accessibility */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      
       {/* Header */}
       <header className="App-header">
         <div className="header-left">
@@ -919,7 +987,24 @@ function App() {
               placeholder="Search" 
               value={searchQuery}
               onChange={handleSearchInputChange}
+              onFocus={handleSearchInputFocus}
+              onBlur={handleSearchInputBlur}
             />
+            
+            {/* Search Suggestions Dropdown */}
+            {showSearchSuggestions && searchSuggestions.length > 0 && (
+              <div className="search-suggestions">
+                {searchSuggestions.map((suggestion, index) => (
+                  <div 
+                    key={index}
+                    className="search-suggestion-item"
+                    onClick={() => handleSearchSuggestionClick(suggestion)}
+                  >
+                    🔍 {suggestion}
+                  </div>
+                ))}
+              </div>
+            )}
             <button className="search-button" onClick={handleSearchSubmit}>🔍</button>
           </div>
           <button className="voice-search">🎤</button>
@@ -1052,22 +1137,67 @@ function App() {
           </div>
           <button className="close-button" onClick={toggleMobileMenu}>×</button>
         </div>
+        
+        {/* User Profile Section */}
+        {isAuthenticated && user && (
+          <div className="mobile-menu-profile">
+            <div className="user-avatar-large">
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+            <div className="user-info">
+              <div className="user-name">{user.username}</div>
+              <div className="user-email">{user.email || 'user@example.com'}</div>
+            </div>
+            <button className="sign-out-button" onClick={handleLogout}>
+              Sign out
+            </button>
+          </div>
+        )}
+        
         <div className="mobile-menu-content">
           <div className="mobile-menu-section">
             <h3>Navigation</h3>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                goToHome();
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">🏠</div>
               <div className="mobile-menu-text">Home</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('trending'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('trending'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('trending');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">🔥</div>
               <div className="mobile-menu-text">Trending</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('shorts'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('shorts'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('shorts');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">⏱️</div>
               <div className="mobile-menu-text">Shorts</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('subscriptions'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('subscriptions'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('subscriptions');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">📺</div>
               <div className="mobile-menu-text">Subscriptions</div>
             </div>
@@ -1075,27 +1205,69 @@ function App() {
           
           <div className="mobile-menu-section">
             <h3>Library</h3>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); goToHome(); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                goToHome();
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">📚</div>
               <div className="mobile-menu-text">Library</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('history'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('history'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('history');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">🕒</div>
               <div className="mobile-menu-text">History</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('liked'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('liked'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('liked');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">👍</div>
               <div className="mobile-menu-text">Liked videos</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('watchlater'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('watchlater'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('watchlater');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">⏱️</div>
               <div className="mobile-menu-text">Watch later</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('yourvideos'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('yourvideos'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('yourvideos');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">🎥</div>
               <div className="mobile-menu-text">Your videos</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('downloads'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('downloads'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('downloads');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">⬇️</div>
               <div className="mobile-menu-text">Downloads</div>
             </div>
@@ -1103,11 +1275,25 @@ function App() {
           
           <div className="mobile-menu-section">
             <h3>Explore</h3>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('gaming'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('gaming'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('gaming');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">🎮</div>
               <div className="mobile-menu-text">Gaming</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('music'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('music'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('music');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">🎵</div>
               <div className="mobile-menu-text">Music</div>
             </div>
@@ -1115,24 +1301,59 @@ function App() {
           
           <div className="mobile-menu-section">
             <h3>Settings</h3>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAboutUs(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAboutUs(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowAboutUs(true);
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">ℹ️</div>
               <div className="mobile-menu-text">About us</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSettings(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSettings(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowSettings(true);
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">⚙️</div>
               <div className="mobile-menu-text">Settings</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowHelp(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowHelp(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowHelp(true);
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">❓</div>
               <div className="mobile-menu-text">Help</div>
             </div>
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('feedback'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentView('feedback'); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('feedback');
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">💬</div>
               <div className="mobile-menu-text">Send feedback</div>
             </div>
             {/* Upload Video Item */}
-            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsUploadModalOpen(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }}>
+            <div className="mobile-menu-item" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsUploadModalOpen(true); setIsMobileMenuOpen(false); setIsSidebarOpen(false); }} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsUploadModalOpen(true);
+                setIsMobileMenuOpen(false);
+                setIsSidebarOpen(false);
+              }
+            }}>
               <div className="mobile-menu-icon">⬆️</div>
               <div className="mobile-menu-text">Upload Video</div>
             </div>
@@ -1153,6 +1374,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'home' ? 'active' : ''}`}
               onClick={goToHome}
+              tabIndex={0} /* Make sidebar items focusable */
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  goToHome();
+                }
+              }}
             >
               <div className="sidebar-icon">🏠</div>
               <div className="sidebar-text">Home</div>
@@ -1160,6 +1388,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'trending' ? 'active' : ''}`}
               onClick={() => setCurrentView('trending')}
+              tabIndex={0} /* Make sidebar items focusable */
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('trending');
+                }
+              }}
             >
               <div className="sidebar-icon">🔥</div>
               <div className="sidebar-text">Trending</div>
@@ -1167,6 +1402,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'shorts' ? 'active' : ''}`}
               onClick={() => setCurrentView('shorts')}
+              tabIndex={0} /* Make sidebar items focusable */
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('shorts');
+                }
+              }}
             >
               <div className="sidebar-icon">⏱️</div>
               <div className="sidebar-text">Shorts</div>
@@ -1174,6 +1416,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'subscriptions' ? 'active' : ''}`}
               onClick={() => setCurrentView('subscriptions')}
+              tabIndex={0} /* Make sidebar items focusable */
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('subscriptions');
+                }
+              }}
             >
               <div className="sidebar-icon">📺</div>
               <div className="sidebar-text">Subscriptions</div>
@@ -1181,13 +1430,20 @@ function App() {
             
             <div className="sidebar-divider"></div>
             
-            <div className="sidebar-item">
+            <div className="sidebar-item" tabIndex={0}>
               <div className="sidebar-icon">📚</div>
               <div className="sidebar-text">Library</div>
             </div>
             <div 
               className={`sidebar-item ${currentView === 'history' ? 'active' : ''}`}
               onClick={() => setCurrentView('history')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('history');
+                }
+              }}
             >
               <div className="sidebar-icon">🕒</div>
               <div className="sidebar-text">History</div>
@@ -1195,6 +1451,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'liked' ? 'active' : ''}`}
               onClick={() => setCurrentView('liked')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('liked');
+                }
+              }}
             >
               <div className="sidebar-icon">👍</div>
               <div className="sidebar-text">Liked videos</div>
@@ -1202,6 +1465,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'watchlater' ? 'active' : ''}`}
               onClick={() => setCurrentView('watchlater')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('watchlater');
+                }
+              }}
             >
               <div className="sidebar-icon">⏱️</div>
               <div className="sidebar-text">Watch later</div>
@@ -1209,6 +1479,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'yourvideos' ? 'active' : ''}`}
               onClick={() => setCurrentView('yourvideos')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('yourvideos');
+                }
+              }}
             >
               <div className="sidebar-icon">🎥</div>
               <div className="sidebar-text">Your videos</div>
@@ -1216,6 +1493,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'downloads' ? 'active' : ''}`}
               onClick={() => setCurrentView('downloads')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('downloads');
+                }
+              }}
             >
               <div className="sidebar-icon">⬇️</div>
               <div className="sidebar-text">Downloads</div>
@@ -1227,6 +1511,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'gaming' ? 'active' : ''}`}
               onClick={() => setCurrentView('gaming')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('gaming');
+                }
+              }}
             >
               <div className="sidebar-icon">🎮</div>
               <div className="sidebar-text">Gaming</div>
@@ -1234,6 +1525,13 @@ function App() {
             <div 
               className={`sidebar-item ${currentView === 'music' ? 'active' : ''}`}
               onClick={() => setCurrentView('music')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setCurrentView('music');
+                }
+              }}
             >
               <div className="sidebar-icon">🎵</div>
               <div className="sidebar-text">Music</div>
@@ -1241,27 +1539,57 @@ function App() {
             
             <div className="sidebar-divider"></div>
             
-            <div className="sidebar-item" onClick={() => setShowAboutUs(true)}>
+            <div className="sidebar-item" onClick={() => setShowAboutUs(true)} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowAboutUs(true);
+              }
+            }}>
               <div className="sidebar-icon">ℹ️</div>
               <div className="sidebar-text">About us</div>
             </div>
-            <div className="sidebar-item" onClick={() => setShowSettings(true)}>
+            <div className="sidebar-item" onClick={() => setShowSettings(true)} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowSettings(true);
+              }
+            }}>
               <div className="sidebar-icon">⚙️</div>
               <div className="sidebar-text">Settings</div>
             </div>
-            <div className="sidebar-item" onClick={() => setShowHelp(true)}>
+            <div className="sidebar-item" onClick={() => setShowHelp(true)} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowHelp(true);
+              }
+            }}>
               <div className="sidebar-icon">❓</div>
               <div className="sidebar-text">Help</div>
             </div>
-            <div className="sidebar-item" onClick={() => setCurrentView('feedback')}>
+            <div className="sidebar-item" onClick={() => setCurrentView('feedback')} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('feedback');
+              }
+            }}>
               <div className="sidebar-icon">💬</div>
               <div className="sidebar-text">Send feedback</div>
             </div>
-            <div className="sidebar-item" onClick={() => setCurrentView('admin')}>
+            <div className="sidebar-item" onClick={() => setCurrentView('admin')} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('admin');
+              }
+            }}>
               <div className="sidebar-icon">⬆️</div>
               <div className="sidebar-text">Upload Videos</div>
             </div>
-            <div className="sidebar-item" onClick={() => setCurrentView('copyright')}>
+            <div className="sidebar-item" onClick={() => setCurrentView('copyright')} tabIndex={0} onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentView('copyright');
+              }
+            }}>
               <div className="sidebar-icon">©️</div>
               <div className="sidebar-text">Copyright</div>
             </div>
@@ -1452,35 +1780,43 @@ function App() {
                   </div>
                 )
               ) : (
-                filteredVideos.map(video => (
-                  <div className="video-card" key={video.id} onClick={() => selectVideo(video)}>
-                    <div className="thumbnail-container">
-                      <div className="thumbnail">
-                        <div className="duration">{video.duration}</div>
+                <>
+                  {/* Show loading skeletons when loading trending or shorts videos */}
+                  {(currentView === 'trending' && loadingTrending) || 
+                   (currentView === 'shorts' && loadingShorts) ? (
+                    <VideoCardSkeleton count={12} />
+                  ) : (
+                    filteredVideos.map(video => (
+                      <div className="video-card" key={video.id} onClick={() => selectVideo(video)}>
+                        <div className="thumbnail-container">
+                          <div className="thumbnail">
+                            <div className="duration">{video.duration}</div>
+                          </div>
+                          {/* Simplified 3-dot menu for video grid - only remove option */}
+                          <VideoMenu 
+                            onAddToPlaylist={() => handleAddToPlaylist(video.id)}
+                            onDelete={() => handleDeleteVideo(video.id)}
+                            videoTitle={video.title}
+                            videoId={video.id}
+                            onDownload={handleDownloadVideo}
+                            showFullMenu={false} // Simplified menu for grid
+                          />
+                        </div>
+                        <div className="video-info">
+                          <div 
+                            className="channel-avatar" 
+                            onClick={(e) => e.stopPropagation()}
+                          ></div>
+                          <div className="video-details">
+                            <div className="video-title">{video.title}</div>
+                            <div className="channel-name">{video.channel}</div>
+                            <div className="video-meta">{video.views} views • {video.timestamp}</div>
+                          </div>
+                        </div>
                       </div>
-                      {/* Simplified 3-dot menu for video grid - only remove option */}
-                      <VideoMenu 
-                        onAddToPlaylist={() => handleAddToPlaylist(video.id)}
-                        onDelete={() => handleDeleteVideo(video.id)}
-                        videoTitle={video.title}
-                        videoId={video.id}
-                        onDownload={handleDownloadVideo}
-                        showFullMenu={false} // Simplified menu for grid
-                      />
-                    </div>
-                    <div className="video-info">
-                      <div 
-                        className="channel-avatar" 
-                        onClick={(e) => e.stopPropagation()}
-                      ></div>
-                      <div className="video-details">
-                        <div className="video-title">{video.title}</div>
-                        <div className="channel-name">{video.channel}</div>
-                        <div className="video-meta">{video.views} views • {video.timestamp}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                    ))
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -2085,6 +2421,67 @@ function App() {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Mobile Bottom Navigation - Visible only on mobile devices */}
+          {isAuthenticated && (
+            <div className="mobile-nav-bottom">
+              <a 
+                href="#" 
+                className={`mobile-nav-item ${currentView === 'home' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToHome();
+                }}
+              >
+                <div className="mobile-nav-icon">🏠</div>
+                <span>Home</span>
+              </a>
+              <a 
+                href="#" 
+                className={`mobile-nav-item ${currentView === 'trending' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentView('trending');
+                }}
+              >
+                <div className="mobile-nav-icon">🔥</div>
+                <span>Trending</span>
+              </a>
+              <a 
+                href="#" 
+                className={`mobile-nav-item ${currentView === 'shorts' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentView('shorts');
+                }}
+              >
+                <div className="mobile-nav-icon">⏱️</div>
+                <span>Shorts</span>
+              </a>
+              <a 
+                href="#" 
+                className={`mobile-nav-item ${currentView === 'subscriptions' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentView('subscriptions');
+                }}
+              >
+                <div className="mobile-nav-icon">📺</div>
+                <span>Subscriptions</span>
+              </a>
+              <a 
+                href="#" 
+                className="mobile-nav-item"
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleMobileMenu();
+                }}
+              >
+                <div className="mobile-nav-icon">☰</div>
+                <span>Menu</span>
+              </a>
             </div>
           )}
 

@@ -205,15 +205,30 @@ exports.searchVideos = async (req, res) => {
       return res.status(400).json({ msg: 'Query parameter is required' });
     }
     
-    // Search in title, description, tags, and category
-    const videos = await Video.find({
-      $or: [
-        { title: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } },
-        { tags: { $in: [new RegExp(query, 'i')] } },
-        { category: { $regex: query, $options: 'i' } }
-      ]
-    }).populate('uploader', 'username');
+    // Use text search with scoring for better results
+    const videos = await Video.find(
+      { $text: { $search: query } },
+      { score: { $meta: 'textScore' } }
+    )
+    .sort({ score: { $meta: 'textScore' } })
+    .limit(20)
+    .populate('uploader', 'username');
+    
+    // If text search yields no results, fall back to regex search
+    if (videos.length === 0) {
+      const regexVideos = await Video.find({
+        $or: [
+          { title: { $regex: query, $options: 'i' } },
+          { description: { $regex: query, $options: 'i' } },
+          { tags: { $in: [new RegExp(query, 'i')] } },
+          { category: { $regex: query, $options: 'i' } }
+        ]
+      })
+      .limit(20)
+      .populate('uploader', 'username');
+      
+      return res.json(regexVideos);
+    }
     
     res.json(videos);
   } catch (err) {
